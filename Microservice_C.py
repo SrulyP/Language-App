@@ -36,7 +36,7 @@ def total_hours(request):
 while True:
     print("Waiting for request...")
     request = socket.recv_json()
-    print("Request received. Returning hours now.")
+    print("Request received. Returning hours changed now.")
     response = total_hours(request)
     print("Sending response back to client.")
     socket.send_json(response)

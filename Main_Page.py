@@ -84,7 +84,7 @@ def homepage():
                                 '- Type "2" or "log in" to log into your account if you are a returning user.\n'
                                 '- Type "3" or "information" to read about the purpose of this app.\n\n'
                                 'What would you like to do?: ')
-
+        print('-' * 34)
         signup_or_login.lower().strip()
         if signup_or_login == "sign up" or signup_or_login == "1":
             logged_in_user = sign_up()
@@ -105,11 +105,21 @@ def sign_up():
         username = input("Please enter a username: ")
         if username in users:
             print(f"The username {username} is already taken. Please choose another username.")
-        else:
+            continue
+        elif len(username) < 3:
+            print("Username must be 3 characters or longer. Please try again.")
+            continue
+        while True:
             pincode = input("Please enter a pincode: ")
-            users[username] = User(username, pincode)
-            print(f"Thank you for signing up, {username}!")
-            return users[username]  # returns the user object for the username inputted
+            if len(pincode) < 3:
+                print("Please enter a pincode 3 characters or greater.")
+                continue
+            else:
+                break
+        users[username] = User(username, pincode)
+        print(f"Thank you for signing up, {username}!\n")
+        print('-' * 34)
+        return users[username]  # returns the user object for the username inputted
 
 
 def log_in():
@@ -141,12 +151,30 @@ def log_in():
 
 
 def information():
-    print("The purpose of this app is to help you decide which language described by the FSI "
-          "you want to add to your learning journey. \n"
-          "To use this app, it is completely free, but you will need to create an account."
-          "To do so, you will have to go to the sign up page, and create an account with a username and pincode.\n"
-          "You will then have the option to add a language to your list. \n")
-    input("Press the Enter key on your keyboard to go back to the main menu.")
+    """Displays information about the app and its purpose."""
+    print("""
+    Welcome to the FSI Language Learning Helper App!
+
+    This application is designed to help you in your decision making and tracking the languages you are learning,
+    based on the Foreign Service Institute (FSI) language categories. 
+    The app provides useful insights into the languages, including their difficulty levels and estimated learning time.
+
+    Features include:
+    - Sign up to create an account with a unique username and pincode.
+    - Add languages to your learning list and track the hours you've spent studying them.
+    - Explore different languages by viewing their FSI category and learning time estimates.
+    - Update or reset your learning hours as you progress.
+
+    Whether you are just starting your journey or are already on your way, this app is here to support your goals.
+
+    To begin using the app, simply sign up and start adding languages to your list. 
+    You can then explore the FSI details of each language and track your learning progress over time.
+
+    Happy learning and lots of luck!
+
+    Press the Enter key to return to the menu.
+    """)
+    input()
 
 
 def log_out():
@@ -158,6 +186,7 @@ def log_out():
 def logged_in(user):
     """A main function hub to access other functions after the user logs in/signs up."""
     language_learning_list(user)
+    language_tips()
     while True:
         print('-' * 34)
         option = input(
@@ -173,12 +202,15 @@ def logged_in(user):
         )
 
         option = option.lower().strip()
+        print('-' * 34)
         if option == "add language" or option == "1":
             language_adder(user)
             language_learning_list(user)
+            language_tips()
         elif option == "log hours" or option == "2":
             total_hours(user)
             language_learning_list(user)
+            language_tips()
         elif option == "information" or option == "3":
             information()
         elif option == "category" or option == "4":
@@ -203,6 +235,7 @@ def language_learning_list(user):
     if not user.get_languages_learning():
         print("Your language list is currently empty.")
     else:
+        print('-' * 34)
         languages_hours = user.get_languages_learning()
         print("\nYou are currently learning:")
         for language, hours in languages_hours.items():
@@ -235,7 +268,19 @@ def language_category(language):
     socketA.send_json({"language": language})
     response = socketA.recv_json()
     category = response["category"]
-    print(f"According to the FSI, the {language} language is of {category}")
+    if category == "category I":
+        difficulty = "easy"
+    elif category == "category II":
+        difficulty = "relatively easy"
+    elif category == "category III":
+        difficulty = "difficult"
+    elif category == "category IV":
+        difficulty = "very difficult"
+    if response.get("category") != "Language not found.":
+        print(f"According to the FSI, the {language} language is of {category}.\n"
+              f"This means that it is {difficulty} for a native English speaker to learn.")
+    else:
+        print("Invalid language input. Please try again.")
 
 
 # Microservice_B
@@ -270,7 +315,7 @@ def request_current_hours(language):
 
 
 def handle_hours_update(user, language):
-    """Handles user input for adding or resetting hours."""
+    """Handles user input for adding or resetting hours for Microservice_C"""
     while True:
         inc_or_reset = input(f'- Type "1" or "add" to add more hours. '
                              f'\n- Type "2" or "reset" to reset the total hours for {language}. '
@@ -278,14 +323,7 @@ def handle_hours_update(user, language):
                              f'What would you like to do?: ')
         inc_or_reset.strip().lower()
 
-        if inc_or_reset == "1" or inc_or_reset == "reset":
-            socketC.send_json({"action": "reset_hours", "language": language})
-            socketC.recv_json()
-            print(f"Hours for {language} have been reset to 0.")
-            user.get_languages_learning()[language] = 0
-            break
-
-        elif inc_or_reset == "2" or inc_or_reset == "add":
+        if inc_or_reset == "1" or inc_or_reset == "add":
             additional_hours = int(input(f"How many hours would you like to add for {language}?: "))
             if not isinstance(additional_hours, int) or additional_hours <= 0:
                 print("Please enter a valid integer amount.")
@@ -297,6 +335,13 @@ def handle_hours_update(user, language):
             user.get_languages_learning()[language] = updated_hours
             break
 
+        elif inc_or_reset == "2" or inc_or_reset == "reset":
+            socketC.send_json({"action": "reset_hours", "language": language})
+            socketC.recv_json()
+            print(f"Hours for {language} have been reset to 0.")
+            user.get_languages_learning()[language] = 0
+            break
+
         elif inc_or_reset == "3" or inc_or_reset == "back":
             print("Returning to the previous menu.")
             break
@@ -305,8 +350,8 @@ def handle_hours_update(user, language):
 
 
 def total_hours(user):
-    """Tracks total hours spent learning a specific language."""
-    language = input("Which language do you want to track hours for?: ")
+    """Tracks total hours spent learning a specific language, using Microservice_C."""
+    language = input("Which language do you want to log or reset hours for?: ")
 
     language = validate_language(user, language)
     if not language:
@@ -316,6 +361,14 @@ def total_hours(user):
     print(f"You have currently logged {current_hours} hours for {language}.")
 
     handle_hours_update(user, language)
+
+
+# Microservice D:
+def language_tips():
+    """Gives general language learning tips obtained from Microservice_D."""
+    socketD.send_json({"request": "get_tips"})
+    response = socketD.recv_json()
+    print(f"Language Learning Tip: {response['tips']}")
 
 
 if __name__ == "__main__":
