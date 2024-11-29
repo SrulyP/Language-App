@@ -65,8 +65,9 @@ def language_category(language):
         "Xhosa": "category III",
         "Zulu": "category III",
         "Arabic": "category IV",
-        "Chinese - Cantonese": "category IV",
-        "Chinese - Mandarin": "category IV",
+        "Chinese": "category IV",
+        "Cantonese": "category IV",
+        "Mandarin": "category IV",
         "Japanese": "category IV",
         "Korean": "category IV"
     }

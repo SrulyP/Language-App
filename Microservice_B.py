@@ -71,8 +71,9 @@ def language_hours(language):
         "Xhosa": "1,100",
         "Zulu": "1,100",
         "Arabic": "2,200",
-        "Chinese - Cantonese": "2,200",
-        "Chinese - Mandarin": "2,200",
+        "Chinese": "2,200",
+        "Cantonese": "2,200",
+        "Mandarin": "2,200",
         "Japanese": "2,200",
         "Korean": "2,200"
     }
