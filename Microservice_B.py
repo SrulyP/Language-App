@@ -3,7 +3,7 @@ import zmq
 print("Starting Microservice_B server...")
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5556")
+socket.bind("tcp://*:5566")
 print("Microservice_B server connected successfully.")
 
 
@@ -85,7 +85,8 @@ def language_hours(language):
 while True:
     print("Waiting for request...")
     request = socket.recv_json()
-    print("Request received. Returning hours now.")
-    response = language_hours(request["language"])
-    print("Sending response back to client.")
+    request_language = request["language"]
+    print(f"Request received for hours to learn {request_language}. Returning hours now.")
+    response = language_hours(request_language)
+    print(f"Sending hours to learn {request_language} back to client.")
     socket.send_json({"hours": response})

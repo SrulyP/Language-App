@@ -14,10 +14,10 @@ socketA = context.socket(zmq.REQ)  # Microservice_A, written by Jazzmyne
 socketB = context.socket(zmq.REQ)  # Microservice_B
 socketC = context.socket(zmq.REQ)  # Microservice_C
 socketD = context.socket(zmq.REQ)  # Microservice_D
-socketA.connect("tcp://localhost:5555")
-socketB.connect("tcp://localhost:5556")
-socketC.connect("tcp://localhost:5557")
-socketD.connect("tcp://localhost:5558")
+socketA.connect("tcp://localhost:5565")
+socketB.connect("tcp://localhost:5566")
+socketC.connect("tcp://localhost:5567")
+socketD.connect("tcp://localhost:5568")
 
 
 class User:
@@ -193,9 +193,9 @@ def logged_in(user):
             '\nPlease choose one of the following options:\n'
             '- Type "1" or "add language" to add a new language.\n'
             '- Type "2" or "log hours" to log or reset the hours you spent learning a language.\n'
-            '- Type "3" or "information" for more information about the app.\n'
-            '- Type "4" or "category" to see the FSI category of a language.\n'
-            '- Type "5" or "hours" to see the number of hours the FSI estimates it will take to learn a language.\n'
+            '- Type "3" or "category" to see the FSI category of a language.\n'
+            '- Type "4" or "hours" to see the number of hours the FSI estimates it will take to learn a language.\n'
+            '- Type "5" or "information" for more information about the app.\n'
             '- Type "6" or "log out" to log out of your account and be taken to the homepage.\n'
             '- Type "7" or "quit" to quit the program.\n\n'
             'What would you like to do?: '
@@ -211,16 +211,16 @@ def logged_in(user):
             total_hours(user)
             language_learning_list(user)
             language_tips()
-        elif option == "information" or option == "3":
-            information()
-        elif option == "category" or option == "4":
+        elif option == "category" or option == "3":
             language_request = input("Please type the language name: ")
             language_request = language_request.lower().title()
             language_category(language_request)
-        elif option == "hours" or option == "5":
+        elif option == "hours" or option == "4":
             language_request = input("Please type the language name: ")
             language_request = language_request.lower().title()
             hours_to_learn(language_request)
+        elif option == "information" or option == "5":
+            information()
         elif option == "log out" or option == "6":
             return log_out()  # log out the user object and return to the homepage (makes User object None)
         elif option == "quit" or option == "7":

@@ -4,7 +4,7 @@ import random
 print("Starting Microservice_D server...")
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind("tcp://*:5558")
+socket.bind("tcp://*:5568")
 print("Microservice_D server connected successfully.")
 
 language_learning_tips = [
@@ -25,7 +25,7 @@ language_learning_tips = [
 while True:
     print("Waiting for request...")
     request = socket.recv_json()
-    print("Request received. Returning tip now.")
+    print("Request for random tip received. Loading tip into response now.")
     response = {"tips": random.choice(language_learning_tips)}
     print("Sending response back to client.")
     socket.send_json(response)

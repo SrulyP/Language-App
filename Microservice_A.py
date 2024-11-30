@@ -80,7 +80,7 @@ def microservice_A():
     print("Starting Microservice_A server...")
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5555")
+    socket.bind("tcp://*:5565")
     print("Microservice_A server connected successfully.")
 
     while True:
